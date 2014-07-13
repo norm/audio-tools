@@ -1,0 +1,152 @@
+#!/usr/bin/env perl
+# github:norm:homedir:bin/rip
+#
+# Extract the audio from YouTube videos/playlists 
+
+use Modern::Perl    '2012';
+use Capture::Tiny   'capture_stdout';
+use Getopt::Std;
+use JSON;
+
+
+
+my %option = ();
+getopts( 'a:frv', \%option );
+
+my $count = 0;
+foreach my $id ( @ARGV ) {
+    rip_videos( $id );
+}
+exit;
+
+
+
+sub rip_videos {
+    my $video_or_playlist = shift;
+
+    my $video_ids = capture_stdout {
+            system 'youtube-dl',
+                        '--dump-json',
+                        '--write-thumbnail',
+                        # '--get-title',
+                        # '--get-id',
+                        $video_or_playlist;
+        };
+
+    my @videos = split '\n', $video_ids;
+    my $total  = scalar @videos;
+
+    foreach my $json ( @videos ) {
+        my $data    = from_json( $json );
+        $count++;
+
+        my $title   = $data->{'fulltitle'};
+        my $id      = $data->{'id'};
+        my $artist  = $data->{'uploader'};
+        my $album   = $option{'a'} // $data->{'playlist'} // 'YouTube';
+        my $artwork = $data->{'_filename'};
+        $artwork =~ s{\.[^\.]+$}{.jpg};
+
+        my $filename = sprintf '%02d - %s.m4a', $count, $title;
+        $filename =~ s{[^\w\s\._-]}{ }g;
+
+        if ( !-f $filename or $option{'r'} ) {
+            say "Ripping [${count}/${total}] ${id} ${title}";
+
+            download_youtube_video( $id );
+            extract_wav_from_video( $id );
+            convert_wav_to_m4a( $id );
+            add_metadata_to_m4a( $title, $id, $artist, $album, $total, $artwork );
+
+            rename "${id}.m4a", $filename;
+            cleanup_files( $id, $artwork )
+                unless $option{'f'};
+        }
+        else {
+            say "Ripped  [${count}/${total}] ${id} ${title}";
+        }
+    }
+}
+sub download_youtube_video {
+    my $id = shift;
+    
+    my @args;
+    push @args, '-q'
+        unless $option{'v'};
+
+    system 'youtube-dl', @args,
+                '-o', '%(id)s.mp4', $id;
+
+    die sprintf "Error downloading, exit code %s\n", $? >> 8
+        if $?;
+}
+sub extract_wav_from_video {
+    my $id = shift;
+
+    my @args = ( '-y' );
+    push @args, '-loglevel', 'panic'
+        unless $option{'v'};
+
+    system  'ffmpeg', @args,
+                '-i',  "${id}.mp4", "${id}.wav";
+    
+    die sprintf "Error extracting audio, exit code %s\n", $? >> 8
+        if $?;
+}
+sub convert_wav_to_m4a {
+    my $id = shift;
+
+    my @args = (
+            '--soundcheck-generate',
+            '-f', 'm4af',
+            '-d', 'aac',
+            '-s', '3',
+            '-u', 'vbrq', '127',
+        );
+    push @args, '-v'
+        if $option{'v'};
+
+    system  'afconvert', @args,
+            "${id}.wav";
+}
+sub add_metadata_to_m4a {
+    my $title   = shift;
+    my $id      = shift;
+    my $artist  = shift;
+    my $album   = shift;
+    my $total   = shift;
+    my $artwork = shift;
+
+    my $return = 0;
+    my $output = capture_stdout {
+        my @args = (
+                '--overWrite',
+                '--title',          $title,
+                '--album',          $album,
+                '--artist',         $artist,
+                '--albumArtist',    'Various Artists',
+                '--tracknum',       "${count}/${total}",
+            );
+        push @args, '--artwork', 'poster.jpg'
+            if -f 'poster.jpg';
+        push @args, '--artwork', $artwork
+            if -f $artwork;
+
+        $return = system 'AtomicParsley',
+                        "${id}.m4a",
+                        @args;
+    };
+
+    die sprintf "Error writing metadata, exit code %s\n%s",
+            $return >> 8, $output
+                if $return;
+
+    say $output
+        if $option{'v'};
+}
+sub cleanup_files {
+    my $id      = shift;
+    my $artwork = shift;
+
+    unlink "${id}.wav", "${id}.mp4", $artwork;
+}
