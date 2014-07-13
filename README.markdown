@@ -21,13 +21,13 @@ artist (youtube account), year/purchase date (uploaded date), album artist
 thumbnail.
 
     # rip the audio from one youtube video
-    youtube-rip https://www.youtube.com/watch?v=HU2ftCitvyQ
+    youtube-rip 'https://www.youtube.com/watch?v=HU2ftCitvyQ'
 
     # rip an entire playlist
-    youtube-rip https://www.youtube.com/playlist?list=PL4zR2yLTCZ8dkQat9b7BQCOqpqYVRmePl
+    youtube-rip 'https://www.youtube.com/playlist?list=PL4zR2yLTCZ8dkQat9b7BQCOqpqYVRmePl'
 
     # different album name
-    youtube-rip -a 'Weird Stuff Norm is Obsessed With' https://www.youtube.com/playlist?list=PL4zR2yLTCZ8dkQat9b7BQCOqpqYVRmePl
+    youtube-rip -a 'Weird Stuff Norm is Obsessed With' 'https://www.youtube.com/playlist?list=PL4zR2yLTCZ8dkQat9b7BQCOqpqYVRmePl'
 
     # other options
     youtube-rip -v ...      # verbose output
