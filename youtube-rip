@@ -97,7 +97,7 @@ sub extract_wav_from_video {
         unless $option{'v'};
 
     system  'ffmpeg', @args,
-                '-i',  "${id}.mp4", "${id}.wav";
+                '-i',  "./${id}.mp4", "./${id}.wav";
     
     die sprintf "Error extracting audio, exit code %s\n", $? >> 8
         if $?;
@@ -116,7 +116,7 @@ sub convert_wav_to_m4a {
         if $option{'v'};
 
     system  'afconvert', @args,
-            "${id}.wav";
+            "./${id}.wav";
 }
 sub add_metadata_to_m4a {
     my $title   = shift;
@@ -147,7 +147,7 @@ sub add_metadata_to_m4a {
             if -f $artwork;
 
         $return = system 'AtomicParsley',
-                        "${id}.m4a",
+                        "./${id}.m4a",
                         @args;
     };
 
@@ -162,5 +162,5 @@ sub cleanup_files {
     my $id      = shift;
     my $artwork = shift;
 
-    unlink "${id}.wav", "${id}.mp4", $artwork;
+    unlink "./${id}.wav", "./${id}.mp4", $artwork;
 }
