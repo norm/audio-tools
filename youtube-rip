@@ -37,15 +37,22 @@ sub rip_videos {
     my $total  = scalar @videos;
 
     foreach my $json ( @videos ) {
-        my $data    = from_json( $json );
+        my $data = from_json( $json );
         $count++;
 
         my $title   = $data->{'fulltitle'};
         my $id      = $data->{'id'};
         my $artist  = $data->{'uploader'};
         my $album   = $option{'a'} // $data->{'playlist'} // 'YouTube';
+
         my $artwork = $data->{'_filename'};
         $artwork =~ s{\.[^\.]+$}{.jpg};
+
+        my $date = $data->{'upload_date'};
+        $date = sprintf '%d-%02d-%02dT12:00:00Z',
+                    substr( $date, 0, 4 ),
+                    substr( $date, 4, 2 ),
+                    substr( $date, 6, 2 );
 
         my $filename = sprintf '%02d - %s.m4a', $count, $title;
         $filename =~ s{[^\w\s\._-]}{ }g;
@@ -56,7 +63,8 @@ sub rip_videos {
             download_youtube_video( $id );
             extract_wav_from_video( $id );
             convert_wav_to_m4a( $id );
-            add_metadata_to_m4a( $title, $id, $artist, $album, $total, $artwork );
+            add_metadata_to_m4a(
+                $title, $id, $artist, $album, $total, $artwork, $date );
 
             rename "${id}.m4a", $filename;
             cleanup_files( $id, $artwork )
@@ -116,6 +124,7 @@ sub add_metadata_to_m4a {
     my $album   = shift;
     my $total   = shift;
     my $artwork = shift;
+    my $date    = shift;
 
     my $return = 0;
     my $output = capture_stdout {
@@ -125,6 +134,8 @@ sub add_metadata_to_m4a {
                 '--album',          $album,
                 '--artist',         $artist,
                 '--albumArtist',    'Various Artists',
+                '--purchaseDate',   $date,
+                '--year',           substr( $date, 0, 4 ),
                 '--tracknum',       "${count}/${total}",
             );
         push @args, '--artwork', 'poster.jpg'
