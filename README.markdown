@@ -33,3 +33,6 @@ thumbnail.
     youtube-rip -v ...      # verbose output
     youtube-rip -r ...      # re-rip already ripped videos
     youtube-rip -f ...      # don't clean up intermediate files
+
+You can override the YouTube thumbnail by putting a file named `poster.png`
+or `poster.jpg` in the directory.
