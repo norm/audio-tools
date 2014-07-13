@@ -141,6 +141,8 @@ sub add_metadata_to_m4a {
             );
         push @args, '--artwork', 'poster.jpg'
             if -f 'poster.jpg';
+        push @args, '--artwork', 'poster.png'
+            if -f 'poster.png';
         push @args, '--artwork', $artwork
             if -f $artwork;
 
