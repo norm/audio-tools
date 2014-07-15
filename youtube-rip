@@ -12,7 +12,7 @@ use Pod::Usage;
 
 
 my %option = ();
-getopts( 'a:fhnrs:v', \%option );
+getopts( 'a:cfhnrs:v', \%option );
 
 pod2usage( -verbose => 1 ) if $option{'h'};
 
@@ -153,6 +153,7 @@ sub add_metadata_to_m4a {
                 '--purchaseDate',   $date,
                 '--year',           substr( $date, 0, 4 ),
                 '--tracknum',       "${count}/${total}",
+                '--compilation',    'true',
                 '--comment',        "[youtube:${id}]",
             );
         push @args, '--artwork', 'poster.jpg'
@@ -193,7 +194,7 @@ B<youtube-rip> - rip the audio from YouTube videos
 
 =over
 
-=item youtube-rip [-a <album name>] [-f] [-n] [-s <text>] [-v]  B<URL-or-ID> [...]
+=item youtube-rip [-a <name>] [-c] [-f] [-n] [-s <text>] [-v]  B<URL-or-ID> [...]
 
 =item youtube-rip -h
 
@@ -221,6 +222,10 @@ The URL to a YouTube video or playlist, or the ID of a video.
 Uses <name> as the album in the output file's metadata. The default for a
 video in playlist is the name of the playlist, or 'YouTube' for a single
 video.
+
+=item -c 
+
+Flags the output as being a part of a compilation.
 
 =item -f
 
