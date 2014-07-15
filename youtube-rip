@@ -7,11 +7,14 @@ use Modern::Perl    '2012';
 use Capture::Tiny   'capture_stdout';
 use Getopt::Std;
 use JSON;
+use Pod::Usage;
 
 
 
 my %option = ();
-getopts( 'a:frsv', \%option );
+getopts( 'a:fhrsv', \%option );
+
+pod2usage( -verbose => 1 ) if $option{'h'};
 
 my $count = 0;
 foreach my $id ( @ARGV ) {
@@ -167,3 +170,71 @@ sub cleanup_files {
 
     unlink "./${id}.wav", "./${id}.mp4", $artwork;
 }
+
+__END__
+
+=pod
+
+=head1 NAME
+
+B<youtube-rip> - rip the audio from YouTube videos
+
+=head1 SYNOPSIS
+
+=over
+
+=item youtube-rip [-a <album name>] [-f] [-s] [-v]  B<URL-or-ID> [...]
+
+=item youtube-rip -h
+
+=back
+
+Fetches videos, extracts their audio to a WAV file with C<ffmpeg>, converts
+that to C<m4a> with C<afconvert> and then adds metadata with C<AtomicParsley>.
+
+The album art will be the video thumbnail. This can be overriden by putting a
+file C<poster.png> or C<poster.jpg> exists in the current directory.
+
+Will not (by default) re-rip existing rips, so can be used over and over on
+a growing playlist.
+
+=head1 OPTIONS
+
+=over 
+
+=item URL-or-ID
+
+The URL to a YouTube video or playlist, or the ID of a video.
+
+=item -a <name>
+
+Uses <name> as the album in the output file's metadata. The default for a
+video in playlist is the name of the playlist, or 'YouTube' for a single
+video.
+
+=item -f
+
+Don't clean up temporary files (the downloaded video, extracted C<wav> and
+video thumbnail).
+
+=item -r 
+
+Re-rip the audio from videos, even if a previous C<m4a> file exists.
+
+=item -s
+
+Strip the album name from the individual track titles.
+
+=item -v
+
+More verbose output.
+
+=item -h
+
+Shows this help for `youtube-rip`.
+
+=back
+
+=head1 AUTHOR
+
+Mark Norman Francis, <http://marknormanfrancis.com/>
