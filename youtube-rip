@@ -27,11 +27,12 @@ exit;
 sub rip_videos {
     my $video_or_playlist = shift;
 
+    my @args = ( '--dump-json' );
+    push @args, '--write-thumnail'
+        if !-f 'poster.jpg' && !-f 'poster.png';
+
     my $video_ids = capture_stdout {
-            system 'youtube-dl',
-                        '--dump-json',
-                        '--write-thumbnail',
-                        $video_or_playlist;
+            system 'youtube-dl', @args, $video_or_playlist;
         };
 
     my @videos = split '\n', $video_ids;
