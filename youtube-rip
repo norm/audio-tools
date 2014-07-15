@@ -86,7 +86,9 @@ sub rip_videos {
 }
 sub download_youtube_video {
     my $id = shift;
-    
+
+    return if -f "${id}.mp4";
+
     my @args;
     push @args, '-q'
         unless $option{'v'};
@@ -100,6 +102,8 @@ sub download_youtube_video {
 sub extract_wav_from_video {
     my $id = shift;
 
+    return if -f "${id}.wav";
+
     my @args = ( '-y' );
     push @args, '-loglevel', 'panic'
         unless $option{'v'};
@@ -112,6 +116,8 @@ sub extract_wav_from_video {
 }
 sub convert_wav_to_m4a {
     my $id = shift;
+
+    unlink "${id}.mp4";
 
     my @args = (
             '--soundcheck-generate',
