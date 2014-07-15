@@ -65,6 +65,7 @@ sub rip_videos {
         my $filename = sprintf '%02d - %s.m4a', $count, $title;
         $filename =~ s{[^\w\s\._-]}{ }g;
         $filename =~ s{\s+}{ }g;
+        $filename =~ s{^[\s\.]*(.*?)[\s\.]*$}{$1};
 
         if ( !-f $filename or $option{'r'} ) {
             say "Ripping [${count}/${total}] ${id} ${title}";
