@@ -118,7 +118,7 @@ sub extract_wav_from_video {
 sub convert_wav_to_m4a {
     my $id = shift;
 
-    unlink "${id}.mp4";
+    unlink "${id}.m4a";
 
     my @args = (
             '--soundcheck-generate',
