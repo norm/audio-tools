@@ -31,8 +31,6 @@ sub rip_videos {
             system 'youtube-dl',
                         '--dump-json',
                         '--write-thumbnail',
-                        # '--get-title',
-                        # '--get-id',
                         $video_or_playlist;
         };
 
