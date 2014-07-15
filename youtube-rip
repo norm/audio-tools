@@ -11,7 +11,7 @@ use JSON;
 
 
 my %option = ();
-getopts( 'a:frv', \%option );
+getopts( 'a:frsv', \%option );
 
 my $count = 0;
 foreach my $id ( @ARGV ) {
@@ -40,10 +40,13 @@ sub rip_videos {
         my $data = from_json( $json );
         $count++;
 
-        my $title   = $data->{'fulltitle'};
         my $id      = $data->{'id'};
         my $artist  = $data->{'uploader'};
         my $album   = $option{'a'} // $data->{'playlist'} // 'YouTube';
+
+        my $title   = $data->{'fulltitle'};
+        $title =~ s{\s*$album\s*}{}g
+            if $option{'s'};
 
         my $artwork = $data->{'_filename'};
         $artwork =~ s{\.[^\.]+$}{.jpg};
