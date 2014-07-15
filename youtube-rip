@@ -12,7 +12,7 @@ use Pod::Usage;
 
 
 my %option = ();
-getopts( 'a:fhrsv', \%option );
+getopts( 'a:fhnrs:v', \%option );
 
 pod2usage( -verbose => 1 ) if $option{'h'};
 
@@ -48,6 +48,9 @@ sub rip_videos {
 
         my $title   = $data->{'fulltitle'};
         $title =~ s{\s*$album\s*}{}g
+            if $option{'n'};
+
+        $title =~ s{$option{'s'}}{}g
             if $option{'s'};
 
         my $artwork = $data->{'_filename'};
@@ -182,7 +185,7 @@ B<youtube-rip> - rip the audio from YouTube videos
 
 =over
 
-=item youtube-rip [-a <album name>] [-f] [-s] [-v]  B<URL-or-ID> [...]
+=item youtube-rip [-a <album name>] [-f] [-n] [-s <text>] [-v]  B<URL-or-ID> [...]
 
 =item youtube-rip -h
 
@@ -220,9 +223,13 @@ video thumbnail).
 
 Re-rip the audio from videos, even if a previous C<m4a> file exists.
 
-=item -s
+=item -n
 
 Strip the album name from the individual track titles.
+
+=item -s <text>
+
+Strip text from the individual track titles.
 
 =item -v
 
