@@ -153,6 +153,7 @@ sub add_metadata_to_m4a {
                 '--purchaseDate',   $date,
                 '--year',           substr( $date, 0, 4 ),
                 '--tracknum',       "${count}/${total}",
+                '--comment',        "[youtube:${id}]",
             );
         push @args, '--artwork', 'poster.jpg'
             if -f 'poster.jpg';
