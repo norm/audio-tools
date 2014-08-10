@@ -11,6 +11,7 @@ use Config::Std         { def_sep => '=' };
 use FileHandle;
 use File::Path          qw( make_path );
 use Getopt::Std;
+use Lingua::EN::Titlecase;
 use Pod::Usage;
 use Readonly;
 use Term::Menu;
@@ -265,6 +266,7 @@ sub write_details_to_config {
     my $details = shift;
     
     my %config;
+    my $case = Lingua::EN::Titlecase->new();
     my( $artist, $title, $disk ) 
         = extract_info_from_title( $details->{'dtitle'} );
 
@@ -299,10 +301,10 @@ sub write_details_to_config {
         if ( $various_artists ) {
             my ( $artist, $title ) = get_artist_and_title( $track );
             $config{ $track_number }{'artist'} = $artist;
-            $config{ $track_number }{'title'}  = $title;
+            $config{ $track_number }{'title'}  = $case->title( $title );
         }
         else {
-            $config{ $track_number }{'title'} = $track;
+            $config{ $track_number }{'title'} = $case->title( $track );
         }
         
         $current_track++;
