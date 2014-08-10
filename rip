@@ -30,11 +30,12 @@ Readonly my %DEFAULT_TRACK_TAGS => (
         title  => '',
     );
 Readonly my %DEFAULT_ALBUM_TAGS => ( 
-        compilation => 'false',
-        album       => '',
-        artist      => '',
-        year        => '1970',
-        disk        => '1/1',
+        compilation     => 'false',
+        album           => '',
+        artist          => '',
+        year            => '1970',
+        disk            => '1/1',
+        purchaseDate    => '1970-01-01T12:00:00Z',
     );
 
 my $cddb_results_cache;
