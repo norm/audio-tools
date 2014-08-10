@@ -499,7 +499,7 @@ sub convert_tracks_to_aac {
 sub tag_converted_tracks {
     my $details = shift;
     
-    print "TAGGING: ";
+    print "TAGGING:   ";
     
     my @tracks = get_affected_tracks( $details );
     foreach my $track ( @tracks ) {
@@ -529,7 +529,7 @@ sub tag_converted_tracks {
         say $err unless $err =~ m{^\s*$};
         system( "mv ${track}-temp*.m4a ${track}.m4a" );
         
-        print ".";
+        print " $track";
     }
     print "\n";
 }
