@@ -575,6 +575,8 @@ sub get_atomic_parsley_options {
         if -f "cover.jpg";
     push @options, '--artwork', 'cover.jpeg'
         if -f "cover.jpeg";
+    push @options, '--artwork', 'cover.png'
+        if -f "cover.png";
     
     return @options;
 }
